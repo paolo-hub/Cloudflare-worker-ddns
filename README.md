@@ -39,7 +39,7 @@ Ideal if your ISP does not provide a static IP and you want to keep your self-ho
 
 ### 3. Deploy the Worker
 - Go to Workers & Pages → Create Worker.
-- Remove the “Hello World” snippet and paste the content of worker.js
+- Remove the “Hello World” snippet and paste the content of [worker.js](https://raw.githubusercontent.com/paolo-hub/Cloudflare-worker-ddns/refs/heads/main/worker.js)
 - In Settings → Variables and Secrets add:
   - CF_API_TOKEN
   - CF_ZONE_ID
