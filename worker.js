@@ -1,18 +1,18 @@
 export default {
   async fetch(request, env, ctx) {
     try {
-      // ======= Config modificabile: mappa host → record_id =======
+      // ======= Configurable setting: host → record_id mapping =======
       const RECORDS = {
         "example.com":        "RECORD_ID_ROOT",
         "www.example.com":    "RECORD_ID_WWW",
         "dns1.example.com":   "RECORD_ID_DNS1",
         "dns2.example.com":    "RECORD_ID_DNS2",
       };
-      // Root che attiva l'aggiornamento "batch"
-      const ROOT_BATCH_HOST = "minilan.xyz";
+      // Root that triggers the "batch" update
+      const ROOT_BATCH_HOST = "example.com";
       // ===========================================================
 
-      // ======= Secrets necessari =======
+      // ======= Required secrets =======
       const CF_API_TOKEN = env.CF_API_TOKEN;
       const CF_ZONE_ID   = env.CF_ZONE_ID;
       const BASIC_USER   = env.BASIC_USER;
@@ -28,9 +28,9 @@ export default {
         });
       }
 
-      // --- 2) Parametri ---
+      // --- 2) Parameters ---
       const url = new URL(request.url);
-      const hostname = url.searchParams.get("hostname"); // richiesto da Omada
+      const hostname = url.searchParams.get("hostname");
       const queryIp  = url.searchParams.get("ip");
       const verbose  = url.searchParams.get("verbose") === "1";
 
@@ -42,9 +42,9 @@ export default {
       const ipType = isIPv6(clientIp) ? "AAAA" : isIPv4(clientIp) ? "A" : null;
       if (!ipType) return respText("badip", 400);
 
-      // --- 3) Modalità: batch se hostname == ROOT_BATCH_HOST, altrimenti singolo ---
+      // --- 3) Mode: batch if hostname == ROOT_BATCH_HOST, otherwise single ---
       if (hostname === ROOT_BATCH_HOST) {
-        // BATCH: aggiorna tutti i record mappati (filtrati per tipo coerente)
+        // BATCH: update all mapped records (filtered by matching type)
         const entries = Object.entries(RECORDS); // [ [host, id], ... ]
         const results = [];
         for (const [host, id] of entries) {
@@ -63,7 +63,7 @@ export default {
         return respText(ddnsSummary, 200);
       }
 
-      // SINGOLO: comportamento come prima
+      // SINGLE: update only the requested record
       const recordId = RECORDS[hostname];
       if (!recordId) return respText(`notfqdn ${hostname}`, 404);
 
@@ -100,7 +100,7 @@ function checkBasicAuth(authHeader, user, pass) {
 async function updateOne(zoneId, token, host, recordId, newIp, ipType) {
   const endpoint = `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${recordId}`;
 
-  // Leggi record corrente
+  // Read current record
   const getRes = await fetch(endpoint, {
     method: "GET",
     headers: {
@@ -113,7 +113,7 @@ async function updateOne(zoneId, token, host, recordId, newIp, ipType) {
 
   const cur = getData.result; // {type,name,content,ttl,proxied,...}
 
-  // Aggiorna solo se il tipo coincide con l'IP chiamante (A per IPv4, AAAA per IPv6)
+  // Update only if the type matches the calling IP (A for IPv4, AAAA for IPv6)
   if (cur.type !== ipType) {
     return { status: "badtype", msg: `record ${cur.type}, ip ${ipType}` };
   }
