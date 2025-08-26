@@ -1,5 +1,5 @@
 # Cloudflare Worker DDNS
-![alt text](https://badgen.net/badge/release/v.1.0/green?) ![alt text](https://badgen.net/badge/platform/Cloudflare/orange?) ![alt text](https://badgen.net/badge/required/Supervisor/red?) ![alt text](https://badgen.net/badge/code/JS/pink?) ![alt text](https://badgen.net/badge/license/MIT/blue?)
+![alt text](https://badgen.net/badge/release/v.1.0/green?) ![alt text](https://badgen.net/badge/platform/Cloudflare/orange?) ![alt text](https://badgen.net/badge/code/JS/pink?) ![alt text](https://badgen.net/badge/license/MIT/blue?)
 
 A **Cloudflare Worker** that automatically updates DNS records (A/AAAA) when your public IP changes.  
 Ideal if your ISP does not provide a static IP and you want to keep your self-hosted services reachable with your Cloudflare domain.
